@@ -6,7 +6,7 @@ ROLE="Member"
 DRY_RUN=false
 AUTO_YES=false
 
-trap 'echo "💥 Terjadi error di baris $LINENO"; exit 1' ERR
+trap 'echo "💥 Switch Project Abort 💥"; exit 1' ERR
 
 fail() { echo "❌ ERROR: $1" >&2; exit 1; }
 log() { echo "$*"; }
@@ -42,8 +42,8 @@ get_project_id() {
     echo "Memeriksa pengguna: $email" >&2
     local projects
     projects=$(openstack role assignment list --user "$email" --user-domain "$DOMAIN" --role "$ROLE" -f value -c Project)
-    [ -z "$projects" ] && fail "Pengguna '$email' atau projek tidak ditemukan."
-    [ "$(echo "$projects" | wc -l)" -ne 1 ] && fail "Pengguna '$email' memiliki lebih dari satu projek."
+    [ -z "$projects" ] && fail "Pengguna '$email' atau project tidak ditemukan."
+    [ "$(echo "$projects" | wc -l)" -ne 1 ] && fail "Pengguna '$email' memiliki lebih dari satu project."
     echo "$projects"
 }
 
@@ -78,7 +78,7 @@ print_summary() {
 }
 
 usage() {
-    echo "🔄 Skrip Switch Projek OpenStack"
+    echo "🔄 Skrip Switch Project OpenStack"
     echo "Usage: $0 [-u1 email1] [-u2 email2] [--dry-run] [--yes]"
     echo "  -u1    Email pengguna 1"
     echo "  -u2    Email pengguna 2"
@@ -104,14 +104,14 @@ done
 
 command -v openstack >/dev/null 2>&1 || fail "OpenStack CLI tidak ditemukan."
 
-echo -e "\n=== 🔄 NEO - Switch Projek ===\n"
+echo -e "\n=== 🔄 NEO - Switch Project ===\n"
 
 # Interaktif jika email tidak diberikan via argumen
 if [ -z "$EMAIL1" ]; then read -rp "Masukkan Email Pengguna 1: " EMAIL1; fi
 if [ -z "$EMAIL2" ]; then read -rp "Masukkan Email Pengguna 2: " EMAIL2; fi
 [ -z "$EMAIL1" ] || [ -z "$EMAIL2" ] && fail "Kedua email harus diisi."
 
-log "🔎 Mengambil informasi proyek awal..."
+log "🔎 Mengambil informasi project awal..."
 project1=$(get_project_id "$EMAIL1")
 project2=$(get_project_id "$EMAIL2")
 
